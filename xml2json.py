@@ -150,11 +150,14 @@ def elem2json(elem, options, strip_ns=1, strip=1):
 
     if hasattr(elem, 'getroot'):
         elem = elem.getroot()
-
-    if options.pretty:
-        return json.dumps(elem_to_internal(elem, strip_ns=strip_ns, strip=strip), sort_keys=True, indent=4, separators=(',', ': '))
+    if options.code:
+        ascii=True
     else:
-        return json.dumps(elem_to_internal(elem, strip_ns=strip_ns, strip=strip))
+        ascii=False;
+    if options.pretty:
+        return json.dumps(elem_to_internal(elem, strip_ns=strip_ns, strip=strip), ensure_ascii=ascii, sort_keys=True, indent=4, separators=(',', ': '))
+    else:
+        return json.dumps(elem_to_internal(elem, strip_ns=strip_ns, strip=strip), ensure_ascii=ascii)
 
 
 def json2elem(json_data, factory=ET.Element):
@@ -206,6 +209,9 @@ def main():
     p.add_option(
         '--pretty', action="store_true",
         dest="pretty", help="Format JSON output so it is easier to read")
+    p.add_option(
+        '--ascii', action="store_true",
+        dest="code", help="Escape UNICODE output to ASCII code")
     p.add_option(
         '--strip_namespace', action="store_true",
         dest="strip_ns", help="Strip namespace for xml2json")
